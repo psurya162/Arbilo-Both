@@ -63,10 +63,14 @@ export default function AdminLogin() {
         toast.success('Admin login successful');
         setTimeout(() => navigate('/admin-dashboard'), 2000); // Redirect to Admin Dashboard
       } else {
-        toast.error('Invalid admin login credentials');
+        toast.error(response.data.message || 'Invalid login credentials');
       }
     } catch (error) {
-      toast.error('Error during admin login');
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Error during login');
+      }
       console.error(error);
     } finally {
       setLoading(false);

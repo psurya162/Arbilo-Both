@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import config from '@/config.js/config';
+import axios from 'axios';
 
 const UserTable = () => {
   const [users, setUsers] = useState([]);
@@ -16,28 +17,20 @@ const UserTable = () => {
           return;
         }
 
-        const response = await fetch(   `${config.API_URL}/api/admin/users`, {
-          method: 'GET',
+        const response = await axios.get(`${config.API_URL}/api/admin/users`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
           },
         });
 
-        if (response.status === 401) {
-          console.error('Unauthorized. Please log in again.');
-          return;
-        }
-
-        const data = await response.json();
-        // Check if data contains the 'users' key and set users state
-        if (data.users && typeof data.users === 'object') {
-            setUsers([data.users]); // Set the users array
+        if (Array.isArray(response.data.users)) {
+          setUsers(response.data.users); // Correctly set users
         } else {
-          console.error('No valid users data found');
+          console.error('Invalid users data received:', response.data);
         }
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching users:', error.response?.data?.message || error.message);
       }
     };
 

@@ -4,6 +4,7 @@ import axios from "axios";
 import { FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import toast, { Toaster } from 'react-hot-toast';
 import Loader from '../../components/Loader/Loader'
+import config from "@/config.js/config";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -25,30 +26,38 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
+    // Check if all fields are filled
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       toast.error("Please fill in all the fields.");
       return;
     }
   
+    // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match.");
       return;
     }
   
-    // Use toast.promise to handle the loading, success, and error states
+    // Send signup request
     toast.promise(
       axios.post(`${config.API_URL}/api/auth/signup`, formData),
       {
-        loading: 'Signing up...',
+        loading: "Signing up...",
         success: (response) => {
-          navigate("/login");
-          return response.data.message;
+          navigate("/login"); // Redirect to login page on success
+          return response.data.message; // Display success message
         },
         error: (error) => {
-          if (error.response?.data?.errors) {
-            return error.response.data.errors.map((err) => `${err.path}: ${err.msg}`).join(', ');
-          } else if (error.response?.data?.message) {
-            return error.response.data.message;
+          // Handle specific error cases
+          if (error.response?.status === 400) {
+            if (error.response.data.message === "Email is already registered. Please log in.") {
+              return "Email is already registered. Please log in.";
+            } else if (error.response.data.errors) {
+              // Handle validation errors
+              return error.response.data.errors.map((err) => err.msg).join(", ");
+            } else {
+              return error.response.data.message || "An error occurred during signup.";
+            }
           } else {
             return "An error occurred during signup.";
           }
@@ -56,6 +65,7 @@ export default function Signup() {
       }
     );
   };
+
 
   return (
     <div className="relative min-h-screen bg-gray-50">

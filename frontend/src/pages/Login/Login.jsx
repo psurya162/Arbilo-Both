@@ -34,20 +34,20 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault(); // Prevent the default form submission
-
+  
     try {
       setLoading(true);
       const response = await axios.post(`${config.API_URL}/api/auth/login`, {
         email: form.email,
         password: form.password,
       });
-
+  
       if (response.data && response.data.token && response.data.user) {
         const { token, user } = response.data;
         localStorage.setItem('authToken', token);
         localStorage.setItem('user', JSON.stringify(user));
         setAuth({ user, token });
-
+  
         if (rememberMe) {
           localStorage.setItem('rememberedEmail', form.email);
           localStorage.setItem('rememberedPassword', form.password);
@@ -55,14 +55,21 @@ export default function Login() {
           localStorage.removeItem('rememberedEmail');
           localStorage.removeItem('rememberedPassword');
         }
-
-        toast.success('Login successful');
+  
+        // Display success message from backend if available
+        toast.success(response.data.message || 'Login successful');
         setTimeout(() => navigate('/dashboard'), 2000);
       } else {
-        toast.error('Invalid login credentials');
+        // Display error message from backend if available
+        toast.error(response.data.message || 'Invalid login credentials');
       }
     } catch (error) {
-      toast.error('Error during login');
+      // Handle error response from backend
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Error during login');
+      }
       console.error(error);
     } finally {
       setLoading(false);

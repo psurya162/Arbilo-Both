@@ -43,10 +43,10 @@ const signup = async (req, res) => {
 
     // Check if user already exists
     const existingUser = await db.select("tbl_users", "*", `email='${normalizedEmail}'`);
-    console.log(existingUser);  // Debugging the query result
+    console.log(existingUser); // Debugging the query result
 
     if (existingUser && existingUser.length > 0) {
-      return res.status(400).json({ message: "Email already exists" });
+      return res.status(400).json({ message: "Email is already registered. Please log in." });
     }
 
     // Hash password
@@ -62,6 +62,13 @@ const signup = async (req, res) => {
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     console.error(err);
+
+    // Handle duplicate email error
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ message: "Email is already registered. Please log in." });
+    }
+
+    // Handle other errors
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -160,28 +167,27 @@ const forgotPassword = async (req, res) => {
       { expiresIn: "5m" }
     );
 
-    // SMTP configuration
-    // const transporter = nodemailer.createTransport({
-    //   host: "smtp.hostinger.com",
-    //   port: 465,
-    //   secure: true, // Use SSL
-    //   auth: {
-    //     user: "alok.radiolabs@arbilo.com",
-    //     pass: "Alok@up53",
-    //   },
-    // });
+     const transporter = nodemailer.createTransport({
+          host: "smtp.hostinger.com",
+          port: 465,
+          secure: true, // Use SSL
+          auth: {
+            user: "alok.radiolabs@getdreamlife.com",
+            pass: "Alok@up53",
+          },
+        });
 
-    const transporter = nodemailer.createTransport({
-      host: '145.223.23.3',  // Your server's public IP or hostname
-      port: 1025,            // MailHog's SMTP port
-      secure: false,         // No SSL
-      auth: false,  
-    });
+    // const transporter = nodemailer.createTransport({
+    //   host: '145.223.23.3',  // Your server's public IP or hostname
+    //   port: 1025,            // MailHog's SMTP port
+    //   secure: false,         // No SSL
+    //   auth: false,  
+    // });
 
     const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
 
     await transporter.sendMail({
-      from: "alok.radiolabs@arbilo.com",
+      from: "alok.radiolabs@getdreamlife.com",
       to: email,
       subject: "Password Reset",
       html: `

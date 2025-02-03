@@ -1,16 +1,19 @@
 const nodemailer = require("nodemailer");
 
 // Configure transporter for Hostinger SMTP
-const transporter = nodemailer.createTransport({
-  host: '145.223.23.3',  // Your server's public IP or hostname
-  port: 1025,            // MailHog's SMTP port
-  secure: false,         // No SSL
-  auth: false,  
-});
+ const transporter = nodemailer.createTransport({
+      host: "smtp.hostinger.com",
+      port: 465,
+      secure: true, // Use SSL
+      auth: {
+        user: "alok.radiolabs@getdreamlife.com",
+        pass: "Alok@up53",
+      },
+    });
 const sendWelcomeEmail = async (name, email) => {
   try {
     const mailOptions = {
-      from: '"Arbilo.com" <arbilo@getdreamlife.com>', // Sender email
+      from: '"Radiolabs" <alok.radiolabs@getdreamlife.com>', // Sender email
       to: email,
       subject: "Welcome to Our Service",
       html: `<!DOCTYPE html>
@@ -78,7 +81,7 @@ const sendWelcomeEmail = async (name, email) => {
 const sendPasswordChangeNotification = async (name, email) => {
   try {
     const mailOptions = {
-      from: '"Arbilo.com" <arbilo@getdreamlife.com>', // Sender email
+      from: '"Radiolabs" <alok.radiolabs@getdreamlife.com>', // Sender email
       to: email,
       subject: "Your Password Has Been Changed Successfully",
       html: `
@@ -110,7 +113,7 @@ const sendPasswordChangeNotification = async (name, email) => {
 const sendCredentialsEmail = async (email, password) => {
   try {
     await transporter.sendMail({
-      from: "arbilo@getdreamlife.com",
+      from: "alok.radiolabs@getdreamlife.com",
       to: email,
       subject: "Your Arbilo Premium Access is Ready! 🎉",
       html: `

@@ -3,14 +3,14 @@ require('dotenv').config();
 
 class Database {
     constructor() {
-        // this.host = 'localhost';
-        // this.username = 'root';
-        // this.password = '';
-        // this.database = 'db_arbilo';
-        this.host = "193.203.184.173";
-        this.username =  "u582754191_arbilo"; 
-        this.password = 'Alok@up53'; 
-        this.database =  'u582754191_db_arbilo';
+        this.host = 'localhost';
+        this.username = 'root';
+        this.password = '';
+        this.database = 'db_arbilo';
+        // this.host = "193.203.184.173";
+        // this.username =  "u582754191_arbilo"; 
+        // this.password = 'Alok@up53'; 
+        // this.database =  'u582754191_db_arbilo';
        
         
 

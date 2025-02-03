@@ -94,9 +94,8 @@ const adminLogin = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     // Fetch all users from the database
-    const users = await db.select("tbl_users", "*");
-    console.log("Type of users:", typeof users);
-    console.log("Fetched users:", users);
+    const users = await db.selectAll("tbl_users", "*",true);
+    console.log(users)
 
     // Send the users data in the response
     res.json({ users });

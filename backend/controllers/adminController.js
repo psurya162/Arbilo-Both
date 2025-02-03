@@ -90,12 +90,91 @@ const adminLogin = async (req, res) => {
   }
 };
 
+// Get Admin Profile
+const getAdminProfile = async (req, res) => {
+  try {
+    // Get admin ID from the authenticated request
+    const adminId = req.admin.id; // This comes from the auth middleware
+
+    // Fetch admin details from database
+    const admin = await db.select("tbl_admins", 
+      "id, name, email, created_at", // Only select non-sensitive fields
+      `id=${adminId}`
+    );
+
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    // Return admin data
+    res.json({ admin });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// Update Admin Profile
+const updateAdminProfile = async (req, res) => {
+  try {
+    const adminId = req.admin.id; // From auth middleware
+    const { name, email, currentPassword, newPassword } = req.body;
+
+    // Fetch current admin data
+    const admin = await db.select("tbl_admins", "*", `id=${adminId}`);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    // Prepare update data
+    const updateData = {};
+    
+    // Update name if provided
+    if (name) {
+      updateData.name = name;
+    }
+
+    // Update email if provided
+    if (email && email !== admin.email) {
+      // Check if new email already exists
+      const emailExists = await db.select("tbl_admins", "id", `email='${email}' AND id!=${adminId}`);
+      if (emailExists) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+      updateData.email = email;
+    }
+
+    // Update password if provided
+    if (currentPassword && newPassword) {
+      // Verify current password
+      const isPasswordValid = await bcrypt.compare(currentPassword, admin.password);
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      // Hash new password
+      updateData.password = await bcrypt.hash(newPassword, 10);
+    }
+
+    // Update admin profile
+    if (Object.keys(updateData).length > 0) {
+      await db.update("tbl_admins", updateData, `id=${adminId}`);
+      res.json({ message: "Profile updated successfully" });
+    } else {
+      res.status(400).json({ message: "No data provided for update" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 // Get All Users
 const getAllUsers = async (req, res) => {
   try {
     // Fetch all users from the database
-    const users = await db.selectAll("tbl_users", "*",true);
-    console.log(users)
+    const users = await db.selectAll("tbl_users", "*", true);
+    console.log(users);
 
     // Send the users data in the response
     res.json({ users });
@@ -119,7 +198,7 @@ const toggleUserActiveStatus = async (req, res) => {
     // Update the user's active status in the database
     const result = await db.update(
       "tbl_users",
-      { is_active }, // shorthand for { is_active: is_active }
+      { is_active },
       `id = ${userId}`
     );
 
@@ -134,10 +213,11 @@ const toggleUserActiveStatus = async (req, res) => {
   }
 };
 
-
 module.exports = {
   adminSignup,
   adminLogin,
+  getAdminProfile,
+  updateAdminProfile,
   getAllUsers,
   toggleUserActiveStatus,
 };

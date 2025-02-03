@@ -50,9 +50,9 @@ export default function PricingSection() {
 
           {/* Monthly Subscription */}
           <div className="relative">
-          <p className="absolute -top-6 left-[58%] text-center text-sm font-medium">
+          {/* <p className="absolute -top-6 left-[58%] text-center text-sm font-medium">
             Limited-time offer, the price will increase soon
-          </p>
+          </p> */}
             <div className="w-full rounded-3xl p-8 ring-1 ring-gray-900/10 sm:w-auto sm:p-10 bg-[hsl(0,0%,95%)] text-black">
               <h3 className="text-xl font-bold">Monthly Subscription</h3>
               <div className="mt-4 flex flex-col items-baseline gap-x-2">
@@ -92,9 +92,9 @@ export default function PricingSection() {
               </a>
             </div>
           </div>
-          <p className="absolute bottom-0 left-[71%] -translate-x-1/2 text-center text-sm text-gray-600">
+          {/* <p className="absolute bottom-0 left-[71%] -translate-x-1/2 text-center text-sm text-gray-600">
           Flexible and hassle-free — no hidden fees, cancel anytime
-        </p>
+        </p> */}
         </div>
 
        

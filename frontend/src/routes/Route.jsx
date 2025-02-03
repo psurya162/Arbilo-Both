@@ -1,11 +1,9 @@
-// src/routes/AppRouter.js
 import { createBrowserRouter } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import Loader from '../components/Loader/Loader';
 import ProtectedRoute from '../ProtectedRoute';
 import AdminProtectedRoute from '../AdminProtectedRoute';
-
-
+import AdminProfile from '@/pages/AdminProfile/AdminProfile';
 
 const Layout = lazy(() => import('../layout/Layout/Layout'));
 const DashboardLayout = lazy(() => import('../layout/DashboardLayout/DashboardLayout'));
@@ -17,14 +15,14 @@ const ResetPassword = lazy(() => import('../pages/ResetPassword/ResetPassword'))
 const DashBoard = lazy(() => import('../pages/DashBoard/DashBoard'));
 const Profile = lazy(() => import('../pages/Profile/Profile'));
 const Error404 = lazy(() => import('../pages/Error404/Error404'));
-const PrivacyPolicy = lazy(()=> import('../pages/Home/PrivacyPolicy'))
-const TermsAndConditions = lazy(()=> import('../pages/Home/TermsAndConditions'))
-const EarningDisclaimer = lazy(()=> import('../pages/Home/EarningDisclaimer'))
-const AdminLayout = lazy(()=> import('../layout/AdminLayout/AdminLayout'))
-const AdminLogin = lazy(()=> import('../pages/AdminLogin/AdminLogin'))
-const UserTable = lazy(()=> import('../pages/AdminDashboard/UserTable'))
-const CreateCredential = lazy(()=> import('../pages/CreateCredential/CreateCredential'))
-
+const PrivacyPolicy = lazy(() => import('../pages/Home/PrivacyPolicy'));
+const TermsAndConditions = lazy(() => import('../pages/Home/TermsAndConditions'));
+const EarningDisclaimer = lazy(() => import('../pages/Home/EarningDisclaimer'));
+const AdminLayout = lazy(() => import('../layout/AdminLayout/AdminLayout'));
+const AdminLogin = lazy(() => import('../pages/AdminLogin/AdminLogin'));
+const UserTable = lazy(() => import('../pages/AdminDashboard/UserTable'));
+const CreateCredential = lazy(() => import('../pages/CreateCredential/CreateCredential'));
+const Totaluser = lazy(() => import('../pages/AdminDashboard/Totaluser')); // Lazy load Totaluser
 
 const router = createBrowserRouter([
   {
@@ -41,8 +39,7 @@ const router = createBrowserRouter([
       { path: 'pricing-section', element: <Suspense fallback={<Loader />}><Home /></Suspense> },
       { path: 'faq-section', element: <Suspense fallback={<Loader />}><Home /></Suspense> },
       { path: 'contact-section', element: <Suspense fallback={<Loader />}><Home /></Suspense> },
-      { path: 'tips', element: <Suspense fallback={<Loader />}><Home /></Suspense>},
-    
+      { path: 'tips', element: <Suspense fallback={<Loader />}><Home /></Suspense> },
     ],
   },
   {
@@ -93,22 +90,20 @@ const router = createBrowserRouter([
   },
   {
     path: '/privacy-policy',
-    element: <Suspense fallback={<Loader />}><PrivacyPolicy/></Suspense>,
+    element: <Suspense fallback={<Loader />}><PrivacyPolicy /></Suspense>,
   },
   {
     path: '/terms-and-conditions',
-    element: <Suspense fallback={<Loader />}><TermsAndConditions/></Suspense>,
+    element: <Suspense fallback={<Loader />}><TermsAndConditions /></Suspense>,
   },
   {
     path: '/earning-disclaimer',
-    element: <Suspense fallback={<Loader />}><EarningDisclaimer/></Suspense>,
+    element: <Suspense fallback={<Loader />}><EarningDisclaimer /></Suspense>,
   },
-
   {
     path: '/admin-login',
-    element: <Suspense fallback={<Loader />}><AdminLogin/></Suspense>,
+    element: <Suspense fallback={<Loader />}><AdminLogin /></Suspense>,
   },
-
   {
     path: '/admin-dashboard',
     element: (
@@ -120,20 +115,27 @@ const router = createBrowserRouter([
     ),
     children: [
       {
+        index: true,
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Totaluser /> {/* Display Totaluser only on /admin-dashboard */}
+          </Suspense>
+        ),
+      },
+      {
         path: 'users',
         element: <Suspense fallback={<Loader />}><UserTable /></Suspense>,
       },
       {
         path: 'statistics',
-        element: <Suspense fallback={<Loader />}><CreateCredential /></Suspense>
+        element: <Suspense fallback={<Loader />}><CreateCredential /></Suspense>,
       },
       {
         path: 'profile',
-        element: <div>Profile Page</div>,
+        element: <Suspense fallback={<Loader />}><AdminProfile/></Suspense>,
       },
     ],
   },
- 
 ]);
 
 export default router;
